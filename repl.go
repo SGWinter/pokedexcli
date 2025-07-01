@@ -18,7 +18,25 @@ func startREPL() {
 			continue
 		}
 
-		fmt.Printf("Your command was: %v\n", inputText[0])
+		command := inputText[0]
+
+
+	}
+}
+
+type cliCommand struct {
+	name        string
+	description string
+	callbak     func() error
+}
+
+func getCommand() map[string]cliCommand {
+	return map[string]cliCommand {
+		"exit": {
+			name:        "exit",
+			description: "Exit the pokedex",
+			callbak:     commandExit,
+		},
 	}
 }
 
