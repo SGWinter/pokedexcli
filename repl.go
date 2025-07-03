@@ -18,8 +18,21 @@ func startREPL() {
 			continue
 		}
 
-		command := inputText[0]
+		commandName := inputText[0]
 
+		command, exists := getCommand()[commandName]
+
+		if exists {
+			err := command.callbak()
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			continue
+		} else {
+			fmt.Println("Unknown command")
+			continue
+		}
 
 	}
 }
