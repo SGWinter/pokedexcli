@@ -2,14 +2,17 @@ package main
 
 import (
 	"fmt"
-	"github.com/SGWinter/pokedexcli/internal"
+	"github.com/SGWinter/pokedexcli/internal/pokeapi"
 )
 
 func commandMap() error {
-	locations := internal.locationListAPI()
+	locations, err := pokeapi.LocationList()
+	if err != nil {
+		return err
+	}
 
-	for location := range locations {
-		fmt.Printf("%v\n", location.areas.name)
+	for _, location := range locations.Results {
+		fmt.Printf("%v\n", location.Name)
 	}
 	return nil
 }

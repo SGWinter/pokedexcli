@@ -1,4 +1,4 @@
-package internal
+package pokeapi
 
 import (
 	"encoding/json"
@@ -16,10 +16,10 @@ type RespLocations struct {
 		URL  string `json:"url"`
 	} `json:"results"`
 }
+var limit int = 20
+var offset int = 0
 
-func locationListAPI() (RespLocations, error) {
-	limit := 20
-	offset := 0
+func LocationList() (RespLocations, error) {
 	apiAddress := fmt.Sprintf("https://pokeapi.co/api/v2/location/?limit=%v&offset=%v", limit, offset)
 
 	req, err := http.NewRequest("GET", apiAddress, nil)
@@ -43,6 +43,8 @@ func locationListAPI() (RespLocations, error) {
 	if err != nil {
 		return RespLocations{}, err
 	}
+
+	offset += 20
 
 	return locationsResp, nil
 }
