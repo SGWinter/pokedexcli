@@ -23,7 +23,7 @@ func startREPL() {
 		command, exists := getCommand()[commandName]
 
 		if exists {
-			err := command.callbak()
+			err := command.callback()
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -40,7 +40,7 @@ func startREPL() {
 type cliCommand struct {
 	name        string
 	description string
-	callbak     func() error
+	callback     func() error
 }
 
 func getCommand() map[string]cliCommand {
@@ -48,7 +48,12 @@ func getCommand() map[string]cliCommand {
 		"exit": {
 			name:        "exit",
 			description: "Exit the pokedex",
-			callbak:     commandExit,
+			callback:     commandExit,
+		},
+		"help": {
+			name:        "help",
+			description: "Displays a help message",
+			callback:    commandHelp,
 		},
 	}
 }
