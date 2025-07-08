@@ -19,7 +19,14 @@ type RespLocations struct {
 var limit int = 20
 var offset int = 0
 
-func LocationList() (RespLocations, error) {
+func LocationList(o int) (RespLocations, error) {
+	if o < 0 {
+		offset += o
+		if offset < 0 {
+			offset = 0
+		}
+	}
+
 	apiAddress := fmt.Sprintf("https://pokeapi.co/api/v2/location/?limit=%v&offset=%v", limit, offset)
 
 	req, err := http.NewRequest("GET", apiAddress, nil)
@@ -44,7 +51,9 @@ func LocationList() (RespLocations, error) {
 		return RespLocations{}, err
 	}
 
-	offset += 20
+	if o > 0 {
+		offset += o
+	}
 
 	return locationsResp, nil
 }
