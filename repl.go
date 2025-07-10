@@ -5,66 +5,40 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+
+	"github.com/SGWinter/pokedexcli/internal/pokeapi"
 )
 
-func startREPL() {
-	scanner := bufio.NewScanner(os.Stdin)
+type config struct {
+	pokeapiClient    pokeapi.Client
+	nextLocationsURL *string
+	prevLocationsURL *string
+}
 
+func startRepl(cfg *config) {
+	reader := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print("Pokedex > ")
-		scanner.Scan()
-		inputText := cleanInput(scanner.Text())
-		if len(inputText) == 0 {
+		reader.Scan()
+
+		words := cleanInput(reader.Text())
+		if len(words) == 0 {
 			continue
 		}
 
-		commandName := inputText[0]
+		commandName := words[0]
 
-		command, exists := getCommand()[commandName]
-
+		command, exists := getCommands()[commandName]
 		if exists {
-			err := command.callback()
+			err := command.callback(cfg)
 			if err != nil {
 				fmt.Println(err)
 			}
-
 			continue
 		} else {
 			fmt.Println("Unknown command")
 			continue
 		}
-
-	}
-}
-
-type cliCommand struct {
-	name        string
-	description string
-	callback     func() error
-}
-
-func getCommand() map[string]cliCommand {
-	return map[string]cliCommand {
-		"exit": {
-			name:        "exit",
-			description: "Exit the pokedex",
-			callback:     commandExit,
-		},
-		"help": {
-			name:        "help",
-			description: "Displays a help message",
-			callback:    commandHelp,
-		},
-		"map": {
-			name:        "map",
-			description: "Displays the next 20 locations",
-			callback:    commandMap,
-		},
-		"mapb": {
-			name:        "map",
-			description: "Displays the previous 20 locations",
-			callback:    commandMapb,
-		},
 	}
 }
 
@@ -73,3 +47,35 @@ func cleanInput(text string) []string {
 	words := strings.Fields(output)
 	return words
 }
+
+type cliCommand struct {
+	name        string
+	description string
+	callback    func(*config) error
+}
+
+func getCommands() map[string]cliCommand {
+	return map[string]cliCommand{
+		"help": {
+			name:        "help",
+			description: "Displays a help message",
+			callback:    commandHelp,
+		},
+		"map": {
+			name:        "map",
+			description: "Get the next page of locations",
+			callback:    commandMapf,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Get the previous page of locations",
+			callback:    commandMapb,
+		},
+		"exit": {
+			name:        "exit",
+			description: "Exit the Pokedex",
+			callback:    commandExit,
+		},
+	}
+}
+
